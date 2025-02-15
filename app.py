@@ -12,9 +12,14 @@ comercios = pd.read_excel(xls, sheet_name="comercios")
 transacciones = pd.read_excel(xls, sheet_name="transacciones")
 
 # Procesar los datos
-comercios["Monto ventas Acumulado"] = pd.to_numeric(comercios["Monto ventas Acumulado"], errors='coerce').fillna(0)
-comercios["Monto ventas ultimo mes"] = pd.to_numeric(comercios["Monto ventas ultimo mes"], errors='coerce').fillna(0)
-comercios["cantidad transacciones"] = transacciones.groupby("Id_comercio")["cantidad transacciones"].sum().reset_index()["cantidad transacciones"]
+comercios["Monto ventas Acumulado"] = pd.to_numeric(comercios["Monto ventas Acumulado"])
+comercios["Monto ventas ultimo mes"] = pd.to_numeric(comercios["Monto ventas ultimo mes"]) 
+transacciones["cantidad transacciones"] =pd.to_numeric(transacciones["cantidad transacciones"])
+comercios = comercios.merge(
+    transacciones.groupby("Id_comercio", as_index=False)["cantidad transacciones"].sum(),
+    on="Id_comercio",
+    how="left"
+)
 
 # Normalizar los datos
 scaler = StandardScaler()
